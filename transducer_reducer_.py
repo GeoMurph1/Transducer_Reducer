@@ -92,56 +92,15 @@ plots = '_'.join(["Transducer","Data", "Plots", today1, ver])
 # Set new directory for plots if does not exist:
 if os.path.exists(plots) == False:
     os.mkdir(plots)
+    
+# TODO revise bokeh plot output for updated engine   
+
 """
-# Instantiate pandas DataFrame, set date variables for plots
-
-days = mdates.DayLocator()
-
-# Lists of locations and TOC elevations 
-loc_list = ['RI-17D',	'RI-17S',	'RI-18D',	'RI-27D',	'RI-27I',	'RI-27S',	'RI-33I',	'RI-33S',	'RI-34I',	'RI-34S',	'RI-35DD',	'RI-36I',	'RI-36S',	'RI-38D',	'RI-38I',	'RI-39D',	'RI-39I',
-]
-toc_list = [286.26,	286.2,	293.0878,	298.0119,	298.2569,	297.9959,	297.27,	297.08,	296.45,	296.27,	296.7691,	296.93,	296.91,	296.4854,	296.6084,	296.8475,	297.0035,
-]
-locs_tocs = zip(loc_list, toc_list)
-
-# DataFrame of locations and tops of casing elevations
-df_locs_tocs =  pd.DataFrame({"locs":loc_list, "tocs":toc_list})
         
 # blank column layout for plots        
 column1 = column()
 # Generate dataframes and plots:        
 os.chdir(plots)
-for f in filenames:
-    df = pd.read_excel(f,  infer_datetime_format=True, encoding='utf-8')
-    date_ = df['TimeStamp']
-    flow_datetimes = pd.to_datetime(date_, infer_datetime_format= True)
-    df['TimeStamp'] = flow_datetimes
-    interval = '15T'
-    df['Location'] = df['MonitoringPoint']
-    location = df['MonitoringPoint'].unique().item()
-    df = df.dropna(axis=0, subset=['WaterLevel']).reset_index(drop=True)
-    df["toc_ft_amsl"] = 0
-    if location.lower() == location:
-            df["toc_ft_amsl"] = t
-    df["gwe_ft_amsl"] = df.toc_ft_amsl - df.WaterLevel
-    ### Set constants for filter function ###
-    THRSH = 0.75 
-    RNG = 20 
-    LIM = 20
-    # Filter outliers with defined function
-    outlier_filter(df, THRSH, RNG, LIM)
-    
-    #location = f[47:54] # Directory-dependent; fix with regex? change to count from end of file temporarily
-    df_resamp = df.resample(interval, on='TimeStamp').mean()
-    df_resamp.reset_index(inplace=True)
-    df_resamp["Location"] = location
-    df_resamp = df_resamp[['Location', 'TimeStamp', 'WaterLevel', 'gwe_ft_amsl']]
-    df_resamp.dropna(inplace=True)
-    df_resamp = df_resamp.reset_index(drop=True)
-    df_resamp['dt_str'] = df_resamp['TimeStamp'].dt.strftime('%Y-%m-%d %H:%M')
-
-    print(df_resamp.head())
-    print(df_resamp.shape)
 
     writer = pd.ExcelWriter( location + '_' +  'resamp_on_' + interval + '_mean' + '_'+  today1 +'.xls')
     df_resamp.to_excel(writer, 'Sheet1' )
